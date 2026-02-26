@@ -25,7 +25,7 @@ contacts = []
 # TODO: Task 1 - Create the Contact Book
 # =============================================================================
 
-def add_contact(contacts, name, phone, email, category):
+def add_contact(contacts:dict, name:str, phone:str, email:str, category:str):
     """
     Add a new contact to the contact book.
     
@@ -58,7 +58,7 @@ def add_contact(contacts, name, phone, email, category):
 # TODO: Task 2 - Display Contacts
 # =============================================================================
 
-def display_all_contacts(contacts):
+def display_all_contacts(contacts: dict) -> None:
     """
     Display all contacts in a formatted table.
     
@@ -86,7 +86,7 @@ def display_all_contacts(contacts):
     # TODO: Print footer
     print ("=" * 44)
 
-def display_contact_details(contact):
+def display_contact_details(contact: dict) -> None:
     """
     Display detailed information for a single contact.
     
@@ -112,7 +112,7 @@ def display_contact_details(contact):
 # TODO: Task 3 - Search Functionality
 # =============================================================================
 
-def search_by_name(contacts, query):
+def search_by_name(contacts:dict, query:str):
     """
     Find contacts whose name contains the query string.
     Case-insensitive search.
@@ -124,12 +124,12 @@ def search_by_name(contacts, query):
     # Hint: Use list comprehension and .lower()
     matching = []
     for c in contacts:
-        if query in c.get("name"):
+        if query.lower() in c.get("name").lower():
             matching.append(c)
     return matching
 
 
-def filter_by_category(contacts, category):
+def filter_by_category(contacts:dict, category:str):
     """
     Return all contacts in a specific category.
     
@@ -143,7 +143,7 @@ def filter_by_category(contacts, category):
             matching.append(c)
     return matching
 
-def find_by_phone(contacts, phone):
+def find_by_phone(contacts:dict, phone:str):
     """
     Find a contact by exact phone number.
     
@@ -151,14 +151,18 @@ def find_by_phone(contacts, phone):
         The contact dictionary if found, None otherwise
     """
     # TODO: Search for contact with matching phone
-    pass
+    matching = None
+    for c in contacts:
+        if phone == c.get("phone"):
+            matching = c
+    return matching
 
 
 # =============================================================================
 # TODO: Task 4 - Update and Delete
 # =============================================================================
 
-def update_contact(contacts, phone, field, new_value):
+def update_contact(contacts:dict, phone:str, field:str, new_value:str):
     """
     Update a specific field of a contact.
     
@@ -174,19 +178,14 @@ def update_contact(contacts, phone, field, new_value):
     # TODO: Find contact by phone
     # TODO: Update the specified field
     # TODO: Return success/failure
-    contact_to_update = None
-    for c in contacts:
-        if phone == c.get("phone"):
-            contact_to_update = c
-    
+    contact_to_update = find_by_phone(contacts, phone)
     if contact_to_update != None:
         contact_to_update.update({field: new_value})
         return True
-    else:
-        return False
+    return False
 
 
-def delete_contact(contacts, phone):
+def delete_contact(contacts:dict, phone:str):
     """
     Delete a contact by phone number.
     
@@ -194,16 +193,11 @@ def delete_contact(contacts, phone):
         True if deleted, False if not found
     """
     # TODO: Find and remove contact with matching phone
-    contact_to_update = None
-    for c in contacts:
-        if phone == c.get("phone"):
-            contact_to_update = c
-    
+    contact_to_update = find_by_phone(contacts, phone)
     if contact_to_update != None:
         contacts.remove(contact_to_update)
         return True
-    else:
-        return False
+    return False
     
 
 
@@ -211,7 +205,7 @@ def delete_contact(contacts, phone):
 # TODO: Task 5 - Statistics
 # =============================================================================
 
-def display_statistics(contacts):
+def display_statistics(contacts:dict):
     """
     Display statistics about the contact book.
     
@@ -289,8 +283,13 @@ def main():
                 category = input("Enter category: ")
                 add_contact(contacts, name, phone, email, category)
             case "3":
-                query = input("Enter search query: ")
-                search_by_name(contacts, query)
+                query = input("Enter name to search: ")
+                query_result = search_by_name(contacts, query)
+                if query_result != []:
+                    for c in query_result:
+                        display_contact_details(c)
+                else:
+                    print("No matching contact found")
             case "4":
                 phone = input("Enter phone number of contact to update: ")
                 field = input("Enter field to update: ")
