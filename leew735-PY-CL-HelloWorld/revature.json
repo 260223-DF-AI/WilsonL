@@ -1,0 +1,15 @@
+{
+  "type": "python",
+  "testFiles": [
+    {
+      "path": "src/test/lab_test.py",
+      "testCases": [
+        {
+          "methodName": "test_hello",
+          "label": "Verify sayHello returns greeting message",
+          "description": "Checks that the sayHello method returns the exact string 'Hello, World!' with no extra surrounding whitespace aside from what strip() removes."
+        }
+      ]
+    }
+  ]
+}
