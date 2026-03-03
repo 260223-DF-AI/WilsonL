@@ -1,3 +1,8 @@
+import logger
+import exceptions
+
+logger = logger.setup_logger(__name__, "info")
+
 def read_csv_file(filepath):
     """
     Read a CSV file and return a list of dictionaries.
@@ -10,17 +15,36 @@ def read_csv_file(filepath):
     Returns: List of dictionaries (one per row)
     Raises: FileProcessingError with descriptive message
     """
+    logger.debug(f"Attempting to read csv file {filepath}")
     d_list = []
-    with open(filepath, "r") as f:
-        contents = f.read()
-        for line in contents:
-            line = line.strip().split(",")
-            entry = {
-                "date": line[0],
-                "store_id": line[1],
-                "product": line[2],
-                "quantity": line[3],
-                "price": line[4]
-            }
-            d_list.append(entry)
+    try:
+        with open(filepath, "r") as f:
+            contents = f.read().split("\n")
+            logger.debug("File read and split")
+            for i, line in enumerate(contents):
+                logger.debug(f"Line {i}: {line}")
+                if i == 0:
+                    continue
+                entry = {
+                    "date": line[0],
+                    "store_id": line[1],
+                    "product": line[2],
+                    "quantity": line[3],
+                    "price": line[4]
+                }
+                d_list.append(entry)
+                logger.debug(f"Entry appended: {entry}")
+    except FileNotFoundError as e:
+        logger.error(e)
+    except exceptions.FileProcessingError as e:
+        logger.error(e)
+    except Exception as e:
+        logger.error(e)
+    else:
+        logger.info(f"File successfully read:  {filepath}")
     return d_list
+
+read_csv_file("WilsonL/FileProcessing/data/nice_sales.csv")
+read_csv_file("WilsonL/FileProcessing/data/sample_sales.csv")
+read_csv_file("nosuchfile.py")
+print(read_csv_file("WilsonL/FileProcessing/data/empty_file.csv"))
