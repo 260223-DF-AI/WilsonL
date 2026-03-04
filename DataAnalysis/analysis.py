@@ -43,6 +43,8 @@ def clean_data(df: pd.DataFrame):
     df.dropna(subset=["order_id", "product_name", "quantity", "unit_price"])
     # non-critical fields: fill & keep
     df.fillna("n/a")
+    # convert to date
+    df["order_date"] = pd.to_datetime(df["order_date"])
     # strip whitespace/standardize case for text columns
     df[["customer_id", "product_name", "category", "region"]] = df[["customer_id", "product_name", "category", "region"]].apply(lambda x: x.str.strip().tolower())
     # total_cost column
@@ -56,7 +58,10 @@ def add_time_features(df):
     - quarter
     - is_weekend (boolean)
     """
-    pass
+    df["day_of_week"] = df["order_date"].dt.dayofweek
+    df["month"] = df["order_date"].dt.month
+    df["quarter"] = df["order_date"].dt.quarter
+    df["is_weekend"] = df["order_date"].dt.dayofweek >= 5
 
 def sales_by_category(df):
     """
