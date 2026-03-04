@@ -8,7 +8,7 @@ class InvalidDataError(FileProcessingError):
     def __init__(self, value, expected_type):
         self.value = value
         self.expected_type = expected_type
-        super().__init__(f"Value '{value}' was type {type(value)}, expected type {expected_type}")
+        super().__init__(f"Value '{value}' is an invalid {expected_type}")
 
 class MissingFieldError(FileProcessingError):
     """Raised when a required field is missing."""
