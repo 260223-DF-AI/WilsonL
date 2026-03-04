@@ -1,3 +1,5 @@
+import pandas as pd
+
 def load_data(filepath):
     """
     Load the orders dataset.
@@ -5,7 +7,9 @@ def load_data(filepath):
     - Handle missing values
     - Return a clean DataFrame
     """
-    pass
+    df = pd.read_csv(filepath)
+    df = clean_data(df)
+    return df
 
 def explore_data(df):
     """
@@ -16,9 +20,17 @@ def explore_data(df):
     - Basic statistics for numeric columns
     - Date range covered
     """
-    pass
+    print(df.shape)
+    print(df.info)
+    print(df.columns)
+    print(df.dtypes)
+    print(f"About quantity: {df['quantity'].describe()}")
+    print(f"About price: {df['price'].describe()}")
+    earliest_date = df.groupby("order_date")["order_date"].min()
+    latest_date = df.groupby("order_date")["order_date"].max()
+    print(f"Date range: {earliest_date} to {latest_date}")
 
-def clean_data(df):
+def clean_data(df: pd.DataFrame):
     """
     Clean the dataset:
     - Remove duplicates
@@ -26,7 +38,15 @@ def clean_data(df):
     - Standardize text columns (strip whitespace, consistent case)
     - Add calculated columns: 'total_amount' = quantity * unit_price
     """
-    pass
+    df.drop_duplicates()
+    # critical fields: drop if missing
+    df.dropna(subset=["order_id", "product_name", "quantity", "unit_price"])
+    # non-critical fields: fill & keep
+    df.fillna("n/a")
+    # strip whitespace/standardize case for text columns
+    df[["customer_id", "product_name", "category", "region"]] = df[["customer_id", "product_name", "category", "region"]].apply(lambda x: x.str.strip().tolower())
+    # total_cost column
+    df["total_cost"] = df["quantity"] * df["unit_price"]
 
 def add_time_features(df):
     """
