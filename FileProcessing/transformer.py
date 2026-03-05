@@ -35,7 +35,7 @@ def aggregate_by_product(records):
     product_sales = {}
     for record in records:
         product = record["product"]
-        sale_total = record["total"]
+        sale_total = record["quantity"]
         product_total = record.get("product") # returns 0 if product not added yet
         product_sales.update({product: sale_total+product_total})
     return product_sales
