@@ -1,7 +1,8 @@
 class FileProcessingError(Exception):
     """Base exception for file processing errors."""
-    def __init__(self):
-        super().__init__(f"An error occured processing the file")
+    def __init__(self, message = "An error occured processing the file"):
+        self.message = message
+        super().__init__(message)
 
 class InvalidDataError(FileProcessingError):
     """Raised when data validation fails."""

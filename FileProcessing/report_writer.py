@@ -16,7 +16,7 @@ def write_summary_report(filepath, valid_records, errors, aggregations):
     - Top 5 products
     """
     logger.debug("Generating summary report")
-    valid_records, error_records, = len(valid_records), len(error_records),
+    valid_records, error_records, = len(valid_records), len(errors),
     total_records = error_records + valid_records
 
     report = f"""=== Sales Processing Report ===
@@ -29,10 +29,12 @@ def write_summary_report(filepath, valid_records, errors, aggregations):
 
     Errors:
     """
+    logger.debug("Generating error report")
     for e in errors:
         report += f"  - {e}"
 
     # sales by store
+    logger.debug("Generating sales by store")
     report += "\nSales by Store:"
     by_store = transformer.aggregate_by_store(valid_records)
     for store in by_store:
@@ -45,15 +47,30 @@ def write_summary_report(filepath, valid_records, errors, aggregations):
         report += f"  - {product}: {by_product[product]} units"
     logger.debug("Report generated")
 
+    logger.debug(f"Writing report to CSV file {filepath}")
+    try:
+        with open(filepath, "w+") as f:
+            f.write(report)
+            logger.info("Report written")
+    except FileNotFoundError as e:
+        logger.error(e)
+    except Exception as e:
+        logger.error(e)
+    logger.debug("Attempt to write report completed.")
+
 def write_clean_csv(filepath, records):
     """
     Write validated records to a clean CSV file.
     """
     logger.debug(f"Writing records to CSV file {filepath}")
-    records = validator.validate_all_records(records)[0]
     try:
         with open(filepath, "w+") as f:
-            f.write(records)
+            csv_cols = ""
+            
+            for r in records:
+                #convert dict record to csv string
+                
+                f.write(r)
             logger.info("Records written")
     except FileNotFoundError as e:
         logger.error(e)
@@ -69,7 +86,8 @@ def write_error_log(filepath, errors):
     logger.debug(f"Writing errors to CSV file {filepath}")
     try:
         with open(filepath, "w+") as f:
-            f.write(errors)
+            for e in errors:
+                f.write(e)
             logger.info("Errors written")
     except FileNotFoundError as e:
         logger.error(e)

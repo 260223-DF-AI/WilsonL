@@ -21,14 +21,16 @@ def read_csv_file(filepath):
     try:
         with open(filepath, "r") as f:
             # split the contents by line
-            contents = f.read().split("\n")
-            logger.debug("File read and split")
-
+            contents = f.read()
+            logger.debug(f"contents: {contents}")
+            contents = contents.split("\n")
+            logger.debug(f"File read and split: {contents}")
             # go through the file, line by line
             for i, line in enumerate(contents):
                 logger.debug(f"Line {i}: {line}")
                 if i == 0:
                     continue # ignore column names
+                line = line.split(",")
                 entry = {
                     "date": line[0],
                     "store_id": line[1],

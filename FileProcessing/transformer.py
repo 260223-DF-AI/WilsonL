@@ -22,7 +22,9 @@ def aggregate_by_store(records):
     for record in records:
         store_id = record["store_id"]
         sale_total = record["total"]
-        store_total = store_sales.get(store_id) # returns 0 if store_id doesn't exist yet 
+        store_total = store_sales.get(store_id)
+        if store_total == None:
+            store_total = 0
         store_sales.update({store_id : store_total+sale_total})
     return store_sales
 
@@ -37,5 +39,7 @@ def aggregate_by_product(records):
         product = record["product"]
         sale_total = record["quantity"]
         product_total = record.get("product") # returns 0 if product not added yet
+        if product_total == None:
+            product_total = 0
         product_sales.update({product: sale_total+product_total})
     return product_sales

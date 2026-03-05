@@ -1,7 +1,7 @@
 import logger, exceptions
 import datetime 
 
-logger = logger.setup_logger(__name__, "debug")
+logger = logger.setup_logger(__name__, "info")
 errors = []
 
 def validate_sales_record(record: dict, line_number):
@@ -17,10 +17,8 @@ def validate_sales_record(record: dict, line_number):
     Returns: Validated record with converted types
     Raises: InvalidDataError or MissingFieldError
     """
-    logger.debug(f"Validating record: {record}")
     # assuming record is passed in as dict
     date, store_id, product, quantity, price = record["date"], record["store_id"], record["product"], record["quantity"], record["price"]
-
     # catch missing fields
     if date == "":
         e = exceptions.MissingFieldError("date")
@@ -44,8 +42,10 @@ def validate_sales_record(record: dict, line_number):
         errors.append(e)
     # validate date: YYYY-MM-DD
     # using date object
+    logger.debug(f"Validating date: '{date}'")
     try:
-        year, month, day = int(date[:5]), int(date[5:7]), int(date[8:])
+        year, month, day = int(date[:4]), int(date[5:7]), int(date[8:])
+        logger.debug(f"Broke into year, month, day: '{year}', '{month}', '{day}'")
         date = datetime.date(year, month, day)
     except:
         e = exceptions.InvalidDataError(date, "YYYY-MM-DD")
@@ -53,21 +53,32 @@ def validate_sales_record(record: dict, line_number):
         errors.append(e)
     
     # validate quantity
-    if not isinstance(quantity, int) or quantity < 0:
-        e = exceptions.InvalidDataError(quantity, "positive integer")
-        logger.warning(e)
+    try:
+        logger.debug(f"Validating quantity: '{quantity}'")
+        quantity = int(quantity)
+        assert(quantity > 0)
+    except ValueError as e:
+        raise exceptions.InvalidDataError(quantity, "positive integer")
+    except exceptions.InvalidDataError as e:
+        logger.error(e)
         errors.append(e)
+        
 
     # validate price
-    if price < 0 or not isinstance(price, int, float):
-        e = exceptions.InvalidDataError(price, "positive number")
-        logger.warning(e)
+    try:
+        logger.debug(f"Validating price: '{price}'")
+        price = float(price)
+        assert(price > 0)
+    except ValueError as e:
+        raise exceptions.InvalidDataError(price, "positive number")
+    except exceptions.InvalidDataError as e:
+        logger.error(e)
         errors.append(e)
     
     record["date"], record["store_id"], record["product"], record["quantity"], record["price"] = date, store_id, product, quantity, price
     logger.debug(f"Record validation completed")
 
-def validate_all_records(records):
+def validate_all_records(records: list):
     """
     Validate all records, collecting errors instead of stopping.
     
@@ -77,6 +88,7 @@ def validate_all_records(records):
     logger.debug("Validating all records")
     for i in range(len(records)):
         record = records[i]
+        logger.debug(f"Validating record {record}")
         validate_sales_record(record, i)
-    logger.debug("All records validated")
+    logger.info("All records validated")
     return (records, errors)
