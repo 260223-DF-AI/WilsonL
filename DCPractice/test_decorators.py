@@ -1,5 +1,6 @@
 import pytest
 from decorators import timer, retry, cache
+import random
 
 def test_timer_returns_result():
     """Timer decorator should not affect return value."""
@@ -16,10 +17,17 @@ def test_timer_returns_result():
 
 def test_retry_succeeds_eventually():
     """Retry should succeed if function works within attempts."""
+
+    count = 0
     @retry(max_attempts=3)
-    def add(a, b):
-        return a+b
-    
+    def risky_function():
+        nonlocal count
+        if count != 2:
+            count += 1
+            raise Exception
+        return True
+
+    assert(risky_function())
 
 def test_cache_returns_cached_value():
     """Cache should return same value without recomputing."""

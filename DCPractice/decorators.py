@@ -47,7 +47,7 @@ def logger(func):
         return r
     return log_wrapper
 
-def retry(func, max_attempts=3, delay=1, exceptions=(Exception,)):
+def retry(max_attempts=3, delay=1, exceptions=(Exception,)):
     """
     Retry a function on failure.
     
@@ -62,13 +62,19 @@ def retry(func, max_attempts=3, delay=1, exceptions=(Exception,)):
             # might fail sometimes
             pass
     """
-    @wraps(func)
-    def retry_wrapper(*args, **kwargs):
-        for i in range(max_attempts):
-            r = func(*args, **kwargs)
-            time.sleep(delay)
-            return r
-        return retry_wrapper
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    if attempt == max_attempts - 1:
+                        raise
+                    print(f"Attempt {attempt + 1} failed, retrying...")
+                    time.sleep(delay)
+        return wrapper
+    return decorator
 
 def cache(max_size=128):
     """
