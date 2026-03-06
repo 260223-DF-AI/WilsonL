@@ -93,4 +93,14 @@ def cache(max_size=128):
         expensive_computation.cache_info()
         expensive_computation.cache_clear()
     """
-    pass
+    cached_results = {}
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args):
+            if args in cached_results:
+                return cached_results[args]
+            result = func(*args)
+            cached_results[args] = result
+            return result
+        return wrapper
+    return decorator

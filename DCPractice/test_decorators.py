@@ -1,6 +1,6 @@
 import pytest
 from decorators import timer, retry, cache
-import random
+import random, sys
 
 def test_timer_returns_result():
     """Timer decorator should not affect return value."""
@@ -31,7 +31,8 @@ def test_retry_succeeds_eventually():
 
 def test_cache_returns_cached_value():
     """Cache should return same value without recomputing."""
-    pass
+    
+
 
 def test_cache_info_tracks_hits():
     """Cache info should track hits and misses."""
