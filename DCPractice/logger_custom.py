@@ -1,0 +1,31 @@
+import logging
+
+def setup_logger(name, level="info"):
+    logger = logging.getLogger(name)
+    if not logger.handlers:
+        logger.setLevel(logging.INFO)
+        match(level.lower()):
+            case "debug":
+                logger.setLevel(logging.DEBUG)
+            case "info":
+                logger.setLevel(logging.INFO)
+            case "warning":
+                logger.setLevel(logging.WARNING)
+            case "error":
+                logger.setLevel(logging.ERROR)
+            case "critical":
+                logger.setLevel(logging.CRITICAL)
+            case _:
+                raise ValueError(f"Invalid logging level {level}")
+        console_handler = logging.StreamHandler()
+        file_handler = logging.FileHandler("app.log")
+        formatter = logging.Formatter(
+            '%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+            datefmt = '%H:%M:%S'
+        )
+        console_handler.setFormatter(formatter)
+        file_handler.setFormatter(formatter)
+
+        logger.addHandler(console_handler)
+        logger.addHandler(file_handler)
+    return logger
