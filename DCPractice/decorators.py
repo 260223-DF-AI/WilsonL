@@ -18,9 +18,10 @@ def timer(func):
     @wraps(func)
     def time_wrapper(*args, **kwargs):
         start = time.time()
-        func(*args, **kwargs)
+        r = func(*args, **kwargs)
         end = time.time()
-        print(f"Function {func} took {end-start} seconds to execute")
+        print(f"Function {func.__name__} took {end-start:.2f} seconds to execute")
+        return r
     return time_wrapper
 
 def logger(func):
@@ -40,9 +41,10 @@ def logger(func):
     """
     @wraps(func)
     def log_wrapper(*args, **kwargs):
-        logger_custom.debug(f"Calling {func}({args, kwargs})")
+        logger_custom.debug(f"Calling {func.__name__}({args, kwargs})")
         r = func(*args, **kwargs)
-        logger_custom.info(f"{func} returned {r}")
+        logger_custom.info(f"{func.__name__} returned {r}")
+        return r
     return log_wrapper
 
 def retry(func, max_attempts=3, delay=1, exceptions=(Exception,)):
@@ -63,8 +65,9 @@ def retry(func, max_attempts=3, delay=1, exceptions=(Exception,)):
     @wraps(func)
     def retry_wrapper(*args, **kwargs):
         for i in range(max_attempts):
-            func(*args, **kwargs)
+            r = func(*args, **kwargs)
             time.sleep(delay)
+            return r
         return retry_wrapper
 
 def cache(max_size=128):
