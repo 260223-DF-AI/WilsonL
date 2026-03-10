@@ -1,0 +1,1 @@
+{'date': datetime.date(2024, 1, 15), 'store_id': 'STORE001', 'product': 'Widget A', 'quantity': 10, 'price': 29.99}{'date': datetime.date(2024, 1, 15), 'store_id': 'STORE002', 'product': 'Gadget B', 'quantity': 5, 'price': 49.99}{'date': datetime.date(2024, 1, 17), 'store_id': 'STORE001', 'product': 'Widget A', 'quantity': 12, 'price': 29.99}
