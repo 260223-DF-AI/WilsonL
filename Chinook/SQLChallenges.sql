@@ -209,15 +209,42 @@ WHERE EXTRACT(YEAR FROM AGE(e.hire_date, e.birth_date)) < 35;
 -- DML exercises
 
 -- 1. insert two new records into the employee table.
-
+INSERT INTO employee(
+    last_name,
+    first_name
+) VALUES (
+    'Wilson',
+    'Lee'
+),
+(
+    'Watson',
+    'Lester'
+);
 
 -- 2. insert two new records into the tracks table.
-
+INSERT INTO track (
+    name,
+    media_type_id,
+    milliseconds,
+    unit_price
+) VALUES (
+    'Unfinished Business',
+    1,
+    258000,
+    0.99
+), (
+    'Pink Pony Club',
+    1,
+    240000,
+    0.99
+);
 
 -- 3. update customer Aaron Mitchell's name to Robert Walter
-
+UPDATE customer SET first_name = 'Robert', last_name = 'Walter'
+WHERE first_name = 'Aaron' AND last_name = 'Mitchell';
 
 -- 4. delete one of the employees you inserted.
-
+DELETE FROM employee WHERE first_name = 'Lester' AND last_name = 'Watson';
 
 -- 5. delete customer Robert Walter.
+DELETE FROM customer WHERE first_name = 'Robert' AND last_name = 'Walter';
