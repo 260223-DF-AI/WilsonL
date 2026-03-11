@@ -106,7 +106,6 @@ JOIN artist ar ON ar.artist_id =  al.artist_id
 GROUP BY artist_name ORDER BY sales_count DESC LIMIT 3;
 
 -- Which customers have the same initials as at least one other customer?
-SELECT * FROM customer;
 SELECT LEFT(first_name, 1) || '.' || LEFT(last_name, 1) AS customer_initials,
 first_name || ' ' || last_name as customer_name FROM customer
 WHERE CONCAT(LEFT(first_name, 1), LEFT(last_name, 1)) IN
@@ -114,23 +113,47 @@ WHERE CONCAT(LEFT(first_name, 1), LEFT(last_name, 1)) IN
 GROUP BY CONCAT(LEFT(first_name, 1), LEFT(last_name, 1)) HAVING COUNT(*) > 1);
 
 -- Which countries have the most invoices?
-SELECT COUNT(*) AS invoice_count, 
+SELECT COUNT(*) AS invoice_count, billing_country FROM invoice
+GROUP BY billing_country ORDER BY invoice_count DESC; 
 
 
 -- Which city has the customer with the highest sales total?
-
+SELECT * FROM customer;
+SELECT * FROM invoice;
+SELECT i.billing_city, SUM(i.total) AS sales_total, c.first_name || ' ' || c.last_name AS customer_name FROM invoice i
+JOIN customer c ON i.customer_id = c.customer_id
+GROUP BY customer_name, i.billing_city ORDER BY sales_total DESC LIMIT 1;
 
 -- Who is the highest spending customer?
-
-
+SELECT SUM(i.total) AS sales_total, c.first_name || ' ' || c.last_name as customer_name FROM invoice i
+JOIN customer c on i.customer_id = c.customer_id
+GROUP BY customer_name ORDER BY sales_total DESC LIMIT 1;
 -- Return the email and full name of of all customers who listen to Rock.
-
+SELECT c.first_name, c.last_name, c.email FROM customer c 
+JOIN invoice i ON i.customer_id = c.customer_id
+JOIN invoice_line il on il.invoice_id = i.invoice_id
+JOIN track t on t.track_id = il.track_id
+JOIN genre g on g.genre_id = t.genre_id
+WHERE g.name = 'Rock'
+GROUP BY c.customer_id;
 
 -- Which artist has written the most Rock songs?
-
+SELECT COUNT(*) AS track_count, ar.name FROM track t
+JOIN album al ON al.album_id = t.album_id
+JOIN artist ar ON ar.artist_id = al.artist_id
+JOIN genre g ON g.genre_id = t.genre_id
+WHERE g.name = 'Rock'
+GROUP BY ar.artist_id ORDER BY track_count DESC LIMIT 1;
 
 -- Which artist has generated the most revenue?
-
+SELECT * FROM album;
+SELECT * FROM track;
+SELECT SUM(i.total) AS sales_total, ar.name FROM invoice i
+JOIN invoice_line il ON i.invoice_id = il.invoice_id
+JOIN track t ON t.track_id = il.track_id
+JOIN album al ON al.album_id = t.album_id
+JOIN artist ar ON ar.artist_id = al.artist_id
+GROUP BY ar.artist_id ORDER BY sales_total DESC LIMIT 1;
 
 
 
