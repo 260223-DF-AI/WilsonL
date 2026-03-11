@@ -65,38 +65,56 @@ SELECT al.title, ar.name FROM album al JOIN artist ar ON al.artist_id = ar.artis
 
 -- (inner keyword is optional for inner join)
 -- All songs of the rock genre
-SELECT * FROM genre;
-SELECT * FROM track;
 SELECT t.name AS song_name, g.name AS genre_name FROM track t 
 JOIN genre g on t.genre_id = g.genre_id 
 WHERE g.name = 'Rock';
 
 -- Show all invoices of customers from brazil (mailing address not billing)
-SELECT * FROM invoice;
-SELECT * FROM customer;
 SELECT i.invoice_id, c.first_name || ' ' || c.last_name AS customer_name, c.country FROM invoice i
 JOIN customer c on c.customer_id = i.customer_id
 WHERE c.country = 'Brazil';
 
 -- Show all invoices together with the name of the sales agent for each one
-
+SELECT i.invoice_id, i.total, c.first_name || ' ' || c.last_name AS customer_name, 
+e.first_name || ' ' || e.last_name AS agent_name FROM invoice i
+JOIN customer c ON c.customer_id = i.customer_id
+JOIN employee e ON e.employee_id = c.support_rep_id;
 
 -- Which sales agent made the most sales in 2009?
-
+SELECT COUNT(*) AS sales_count, e.first_name || ' ' || e.last_name AS agent_name FROM invoice i
+JOIN customer c ON c.customer_id = i.customer_id
+JOIN employee e ON e.employee_id = c.support_rep_id
+GROUP BY e.employee_id ORDER BY sales_count DESC LIMIT 1;
 
 -- How many customers are assigned to each sales agent?
-
+SELECT COUNT(*) AS customer_count, e.first_name || ' ' || e.last_name AS agent_name FROM customer c
+JOIN employee e ON e.employee_id = c.support_rep_id
+GROUP BY e.employee_id;
 
 -- Which track was purchased the most in 2010?
-
+SELECT t.name AS track_name, COUNT(*) AS purchase_count FROM invoice i
+JOIN invoice_line il ON i.invoice_id = il.invoice_id
+JOIN track t ON t.track_id = il.track_id
+WHERE EXTRACT(YEAR FROM i.invoice_date) = 2010
+GROUP BY track_name ORDER BY purchase_count DESC LIMIT 1;
 
 -- Show the top three best selling artists.
-
+SELECT COUNT(*) AS sales_count, ar.name AS artist_name FROM invoice_line il
+JOIN track t ON t.track_id = il.track_id
+JOIN album al ON al.album_id = t.album_id
+JOIN artist ar ON ar.artist_id =  al.artist_id
+GROUP BY artist_name ORDER BY sales_count DESC LIMIT 3;
 
 -- Which customers have the same initials as at least one other customer?
-
+SELECT * FROM customer;
+SELECT LEFT(first_name, 1) || '.' || LEFT(last_name, 1) AS customer_initials,
+first_name || ' ' || last_name as customer_name FROM customer
+WHERE CONCAT(LEFT(first_name, 1), LEFT(last_name, 1)) IN
+(SELECT CONCAT(LEFT(first_name, 1), LEFT(last_name, 1)) FROM customer
+GROUP BY CONCAT(LEFT(first_name, 1), LEFT(last_name, 1)) HAVING COUNT(*) > 1);
 
 -- Which countries have the most invoices?
+SELECT COUNT(*) AS invoice_count, 
 
 
 -- Which city has the customer with the highest sales total?
