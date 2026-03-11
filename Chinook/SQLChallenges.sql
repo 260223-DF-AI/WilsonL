@@ -163,24 +163,48 @@ GROUP BY ar.artist_id ORDER BY sales_total DESC LIMIT 1;
 -- plan for them is the same, or different.
 
 -- 1. which artists did not make any albums at all?
+SELECT name, artist_id FROM artist
+WHERE name NOT IN
+(SELECT ar.name FROM artist ar
+RIGHT JOIN album al ON ar.artist_id = al.artist_id);
+
 
 
 -- 2. which artists did not record any tracks of the Latin genre?
-
+SELECT name, artist_id FROM artist
+WHERE name NOT IN 
+(SELECT ar.name FROM artist ar
+JOIN album al ON ar.artist_id = al.artist_id
+JOIN track t ON t.album_id = al.album_id
+JOIN genre g ON g.genre_id = t.genre_id
+WHERE NOT g.name = 'Latin' 
+)
+GROUP BY artist_id ORDER BY name;
 
 -- 3. which video track has the longest length? (use media type table)
-
+SELECT t.name AS track_name, t.track_id, mt.name AS media_type, t.milliseconds AS runtime FROM track t
+JOIN media_type mt ON t.media_type_id = mt.media_type_id
+WHERE mt.media_type_id = 3
+GROUP BY t.track_id, t.name, mt.name
+ORDER BY t.milliseconds DESC LIMIT 1;
 
 -- 4. boss employee (the one who reports to nobody)
-
+SELECT first_name, last_name FROM employee
+WHERE reports_to IS NULL;
 
 -- 5. how many audio tracks were bought by German customers, and what was
 --    the total price paid for them?
-
-
+SELECT SUM(i.total), COUNT(il.quantity) FROM track t
+JOIN invoice_line il ON il.track_id = t.track_id
+JOIN invoice i ON il.invoice_id = i.invoice_id
+JOIN media_type mt ON t.media_type_id = mt.media_type_id
+WHERE i.billing_country = 'Germany'
+AND NOT mt.media_type_id = 3;
 -- 6. list the names and countries of the customers supported by an employee
 --    who was hired younger than 35.
-
+SELECT c.first_name, c.last_name, c.country FROM customer c
+JOIN employee e ON c.support_rep_id = e.employee_id
+WHERE EXTRACT(YEAR FROM AGE(e.hire_date, e.birth_date)) < 35;
 
 -- DML exercises
 
