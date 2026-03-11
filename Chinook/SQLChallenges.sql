@@ -1,3 +1,4 @@
+-- Active: 1773160166027@@127.0.0.1@5432@chinook_pg
 -- Parking Lot*******
 -- *                *
 -- *                *
@@ -30,20 +31,19 @@ select * from actor where first_name = 'John';
 
 -- BASIC CHALLENGES
 -- List all customers (full name, customer id, and country) who are not in the USA
-
-
+SELECT first_name || ' ' || last_name as full_name, customer_id, country FROM customer
+WHERE NOT country = 'USA';
 -- List all customers from Brazil
-
+SELECT * FROM customer WHERE country = 'Brazil';
 
 -- List all sales agents
-
+SELECT * FROM employee WHERE title = 'Sales Support Agent';
 
 -- Retrieve a list of all countries in billing addresses on invoices
-
+SELECT DISTINCT(billing_country) FROM invoice;
 
 -- Retrieve how many invoices there were in 2009, and what was the sales total for that year?
-
-
+SELECT COUNT(*), SUM(total) AS sales_total FROM invoice WHERE EXTRACT(YEAR FROM invoice_date) = 2009;
 -- (challenge: find the invoice count sales total for every year using one query)
 
 
