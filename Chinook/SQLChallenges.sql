@@ -45,26 +45,38 @@ SELECT DISTINCT(billing_country) FROM invoice;
 -- Retrieve how many invoices there were in 2009, and what was the sales total for that year?
 SELECT COUNT(*), SUM(total) AS sales_total FROM invoice WHERE EXTRACT(YEAR FROM invoice_date) = 2009;
 -- (challenge: find the invoice count sales total for every year using one query)
-
+SELECT COUNT(*), SUM(total) AS sales_total, EXTRACT(YEAR FROM invoice_date) AS year FROM invoice 
+GROUP BY EXTRACT(YEAR FROM invoice_date);
 
 -- how many line items were there for invoice #37
-
+SELECT COUNT(*) FROM invoice_line WHERE invoice_id = 37;
 
 -- how many invoices per country? BillingCountry  # of invoices -
--- Retrieve the total sales per country, ordered by the highest total sales first.
+SELECT COUNT(*), billing_country FROM invoice GROUP BY billing_country;
 
+-- Retrieve the total sales per country, ordered by the highest total sales first.
+SELECT billing_country, SUM(total) as total_sales FROM invoice 
+GROUP BY billing_country ORDER BY billing_country DESC;
 
 
 -- JOINS CHALLENGES
 -- Every Album by Artist
-
+SELECT al.title, ar.name FROM album al JOIN artist ar ON al.artist_id = ar.artist_id; 
 
 -- (inner keyword is optional for inner join)
 -- All songs of the rock genre
-
+SELECT * FROM genre;
+SELECT * FROM track;
+SELECT t.name AS song_name, g.name AS genre_name FROM track t 
+JOIN genre g on t.genre_id = g.genre_id 
+WHERE g.name = 'Rock';
 
 -- Show all invoices of customers from brazil (mailing address not billing)
-
+SELECT * FROM invoice;
+SELECT * FROM customer;
+SELECT i.invoice_id, c.first_name || ' ' || c.last_name AS customer_name, c.country FROM invoice i
+JOIN customer c on c.customer_id = i.customer_id
+WHERE c.country = 'Brazil';
 
 -- Show all invoices together with the name of the sales agent for each one
 
